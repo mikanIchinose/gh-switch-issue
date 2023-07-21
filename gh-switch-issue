@@ -1,35 +1,56 @@
 #!/usr/bin/env bash
 set -e
 
-echo "Hello gh-switch-issue!"
+# check dependencies {{{
+isExist() {
+  if command -v "$1" &>/dev/null; then
+    echo true
+  else
+    echo false
+  fi
+}
+isGhExist=$(isExist gh)
+isGumExist=$(isExist gum)
+isDaselExist=$(isExist dasel)
+isJqExist=$(isExist jq)
 
-# Snippets to help get started:
+if ! "$isGhExist"; then
+  echo "gh is not exist"
+  exit 0
+fi
+if ! "$isGumExist"; then
+  echo "gum is not exist"
+  exit 0
+fi
+if ! "$isDaselExist" && ! "$isJqExist"; then
+  echo "dasel or jq is needed"
+  exit 0
+fi
+# }}}
 
-# Determine if an executable is in the PATH
-# if ! type -p ruby >/dev/null; then
-#   echo "Ruby not found on the system" >&2
-#   exit 1
-# fi
+concatNumberAndTitle() {
+  if "$isDaselExist"; then
+    dasel -r json -w - 'all().mapOf(issue,join( ,number,title)).all()'
+  else
+    jq -r '.[] | [.number,.title] | join(" ")'
+  fi
+}
 
-# Pass arguments through to another command
-# gh issue list "$@" -R cli/cli
+assignee="mikanIchinose"
+# @type {number: number, title: string}[]
+issueJson=$(gh issue list --assignee "$assignee" --json title --json number)
+issueList=$(echo "$issueJson" | concatNumberAndTitle)
+# @type number
+selectedIssueNumber=$(echo "$issueList" | gum choose | awk '{print $1}')
 
-# Using the gh api command to retrieve and format information
-# QUERY='
-#   query($endCursor: String) {
-#     viewer {
-#       repositories(first: 100, after: $endCursor) {
-#         nodes {
-#           nameWithOwner
-#           stargazerCount
-#         }
-#       }
-#     }
-#   }
-# '
-# TEMPLATE='
-#   {{- range $repo := .data.viewer.repositories.nodes -}}
-#     {{- printf "name: %s - stargazers: %v\n" $repo.nameWithOwner $repo.stargazerCount -}}
-#   {{- end -}}
-# '
-# exec gh api graphql -f query="${QUERY}" --paginate --template="${TEMPLATE}"
+test "$selectedIssueNumber" = "" && exit 0
+
+isBranchExist=$(git for-each-ref --format="%(refname:short)" refs/heads | grep --quiet '^'feature/"$selectedIssueNumber"'$' && echo true || echo false)
+
+if "$isBranchExist"; then
+  gum confirm "git switch feature/$selectedIssueNumber?" && git switch feature/"$selectedIssueNumber"
+else
+  gum confirm "git switch -c feature/$selectedIssueNumber?" && git switch -c feature/"$selectedIssueNumber" develop
+  # initial commit for four-keys metrics
+  gum confirm "git commit -n --allow-empty -m '対応開始'?" && git commit -n --allow-empty -m '対応開始'
+fi
