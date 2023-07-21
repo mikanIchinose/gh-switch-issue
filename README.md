@@ -14,7 +14,6 @@ gh extension install mikanIchinose/gh-switch-issue
 ## prerequirement
 
 - [gum](https://github.com/charmbracelet/gum)
-- [jq](https://jqlang.github.io/jq/) or [dasel](https://daseldocs.tomwright.me/)
 
 ## usage
 
