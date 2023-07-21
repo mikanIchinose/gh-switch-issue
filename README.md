@@ -8,7 +8,7 @@
 ## install
 
 ```sh
-gh install mikanIchinose/gh-switch-issue
+gh extension install mikanIchinose/gh-switch-issue
 ```
 
 ## prerequirement
