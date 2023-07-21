@@ -2,44 +2,15 @@
 set -e
 
 # check dependencies {{{
-isExist() {
-  if command -v "$1" &>/dev/null; then
-    echo true
-  else
-    echo false
-  fi
-}
-isGhExist=$(isExist gh)
-isGumExist=$(isExist gum)
-isDaselExist=$(isExist dasel)
-isJqExist=$(isExist jq)
-
-if ! "$isGhExist"; then
-  echo "gh is not exist"
-  exit 0
-fi
-if ! "$isGumExist"; then
+if ! command -v gum &>/dev/null; then
   echo "gum is not exist"
-  exit 0
-fi
-if ! "$isDaselExist" && ! "$isJqExist"; then
-  echo "dasel or jq is needed"
   exit 0
 fi
 # }}}
 
-concatNumberAndTitle() {
-  if "$isDaselExist"; then
-    dasel -r json -w - 'all().mapOf(issue,join( ,number,title)).all()'
-  else
-    jq -r '.[] | [.number,.title] | join(" ")'
-  fi
-}
-
 assignee="mikanIchinose"
 # @type {number: number, title: string}[]
-issueJson=$(gh issue list --assignee "$assignee" --json title --json number)
-issueList=$(echo "$issueJson" | concatNumberAndTitle)
+issueList=$(gh issue list --assignee "$assignee" --json title --json number --jq '.[] | [.number,.title] | join(" ")')
 # @type number
 selectedIssueNumber=$(echo "$issueList" | gum choose | awk '{print $1}')
 
