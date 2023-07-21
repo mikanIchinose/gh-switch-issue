@@ -5,6 +5,12 @@
 1. switch feature/{{issue-number}}
 1. first commit for four-keys metrics
 
+## install
+
+```sh
+gh install mikanIchinose/gh-switch-issue
+```
+
 ## prerequirement
 
 - [gum](https://github.com/charmbracelet/gum)
