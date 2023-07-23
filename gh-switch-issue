@@ -8,7 +8,7 @@ if ! command -v gum &>/dev/null; then
 fi
 # }}}
 
-assignee="mikanIchinose"
+assignee="$GH_ISSUE_ASIGNEE"
 # @type {number: number, title: string}[]
 issueList=$(gh issue list --assignee "$assignee" --json title --json number --jq '.[] | [.number,.title] | join(" ")')
 # @type number
