@@ -11,12 +11,6 @@
 gh extension install mikanIchinose/gh-switch-issue
 ```
 
-## setup
-
-```shell
-echo 'export GH_ISSUE_ASIGNEE="{{your github id}}"' >> $HOME/.zshrc
-```
-
 ## prerequirement
 
 - [gum](https://github.com/charmbracelet/gum)
