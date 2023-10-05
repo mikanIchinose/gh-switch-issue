@@ -18,7 +18,7 @@ selectedIssueNumber=$(echo "$issueList" | gum choose | awk '{print $1}')
 
 test "$selectedIssueNumber" = "" && exit 0
 
-isBranchExist=$(git for-each-ref --format="%(refname:short)" refs/heads | grep --quiet '^'feature/"$selectedIssueNumber"'$' && echo true || echo false)
+isBranchExist=$(git for-each-ref --format="%(refname:short)" refs/heads refs/remotes/origin | grep --quiet "feature/$selectedIssueNumber$" && echo true || echo false)
 
 if "$isBranchExist"; then
   gum confirm "git switch feature/$selectedIssueNumber?" && git switch feature/"$selectedIssueNumber"
