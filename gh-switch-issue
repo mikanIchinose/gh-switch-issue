@@ -18,7 +18,7 @@ isBranchExist=$(git for-each-ref --format="%(refname:short)" refs/heads refs/rem
 if "$isBranchExist"; then
   gum confirm "git switch feature/$selectedIssueNumber?" && git switch feature/"$selectedIssueNumber"
 else
-  baseBranch=$(gum choose "master" "main" "develop" --header "base branch?")
+  baseBranch=$(gum choose "develop" "main" "master" --header "which base branch?")
   gum confirm "git switch -c feature/$selectedIssueNumber? $baseBranch" && git switch -c feature/"$selectedIssueNumber" "$baseBranch" || exit 0
   # initial commit for four-keys metrics
   gum confirm "git commit -n --allow-empty -m '対応開始'?" && git commit -n --allow-empty -m '対応開始' || exit 0
