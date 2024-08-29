@@ -8,9 +8,7 @@ if ! command -v gum &>/dev/null; then
 fi
 # }}}
 
-# @type {number: number, title: string}[]
 issueList=$(gh issue list --assignee "@me" --json title --json number --jq '.[] | [.number,.title] | join(" ")')
-# @type number
 selectedIssueNumber=$(echo "$issueList" | gum choose | awk '{print $1}')
 
 test "$selectedIssueNumber" = "" && exit 0
