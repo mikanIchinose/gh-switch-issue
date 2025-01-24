@@ -9,7 +9,7 @@ fi
 # }}}
 
 issueList=$(gh issue list --limit 100 --assignee "@me" --json title --json number --jq '.[] | [.number,.title] | join(" ")')
-selectedIssueNumber=$(echo "$issueList" | gum choose --height 10 | awk '{print $1}')
+selectedIssueNumber=$(echo "$issueList" | gum filter | awk '{print $1}')
 
 test "$selectedIssueNumber" = "" && exit 0
 
